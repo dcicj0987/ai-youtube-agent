@@ -1,15 +1,14 @@
-# tts.py
-import pyttsx3
-import json
+from gtts import gTTS
+import os
 
-with open("script.json", "r", encoding="utf-8") as f:
-    data = json.load(f)
+def create_voiceover(text, output_path="voice.mp3"):
+    tts = gTTS(text=text, lang="en", slow=False)
+    tts.save(output_path)
+    print("Voiceover saved:", output_path)
 
-script = data["script"]
-
-engine = pyttsx3.init()
-engine.setProperty('rate', 150)  # Speed of speech
-engine.save_to_file(script, 'voice.mp3')
-engine.runAndWait()
-
-print("Voice saved as voice.mp3")
+if __name__ == "__main__":
+    # Load script from the text file created by generate_prompt.py
+    with open("script.txt", "r", encoding="utf-8") as f:
+        article = f.read()
+        
+    create_voiceover(article)

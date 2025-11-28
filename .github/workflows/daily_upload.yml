@@ -21,7 +21,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
-          pip install pyttsx3 pillow google-api-python-client google-auth google-auth-oauthlib ffmpeg-python
+          pip install gtts pillow google-api-python-client google-auth google-auth-oauthlib ffmpeg-python
+
 
       - name: Run AI YouTube agent
         env:
