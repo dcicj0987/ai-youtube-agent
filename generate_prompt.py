@@ -1,36 +1,50 @@
-import os
-import json
-from openai import OpenAI
+import os, json
+import requests
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 prompt = """
-Generate a YouTube short idea and return this in JSON format:
+Create a viral YouTube Shorts content plan in JSON format:
+
 {
-"title": "...",
-"tags": "...",
-"script": "..."
+"title": "catchy short title",
+"tags": "tag1,tag2,tag3",
+"script": "Short 20-30 second narration script"
 }
-The content should be engaging, short, viral and trending.
+
+Make it based on trending technology, AI, money making, motivation or viral useful hacks.
 """
 
-response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": prompt}],
-    temperature=0.8
+response = requests.post(
+    "https://api.deepseek.com/v1/chat/completions",
+    headers={
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    },
+    json={
+        "model": "deepseek-chat",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7
+    }
 )
 
-result = response.choices[0].message.content
+# Handle API response safely
+try:
+    raw = response.json()["choices"][0]["message"]["content"]
+except:
+    print("❌ API Error:", response.text)
+    raise SystemExit()
 
-# Extract clean JSON
-clean = result[result.find("{") : result.rfind("}") + 1]
-
-with open("metadata.json", "w", encoding="utf-8") as f:
-    f.write(clean)
-
+# Extract clean JSON from response
+clean = raw[raw.find("{") : raw.rfind("}")+1]
 data = json.loads(clean)
 
+# Save metadata
+with open("metadata.json", "w", encoding="utf-8") as f:
+    json.dump({"title": data["title"], "tags": data["tags"]}, f)
+
+# Script for TTS
 with open("script.txt", "w", encoding="utf-8") as f:
     f.write(data["script"])
 
-print("✔ Generated Title, Tags & Script")
+print("✔ Metadata + Script Generated Successfully (DeepSeek)")
