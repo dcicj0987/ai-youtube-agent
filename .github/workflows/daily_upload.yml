@@ -2,7 +2,7 @@ name: Daily YouTube Upload
 
 on:
   schedule:
-    - cron: '0 3 * * *'   # Runs daily at 03:00 UTC
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,12 +24,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install openai gtts pillow google-api-python-client google-auth google-auth-oauthlib ffmpeg-python
 
-
-      - - name: Generate Script + Title + Tags
-  env:
-    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  run: |
-    python generate_prompt.py
+      - name: Generate Script + Title + Tags
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python generate_prompt.py
 
       - name: Generate Voice
         run: |
@@ -43,11 +42,11 @@ jobs:
         run: |
           python assemble_video.py
 
-      - - name: Upload Video to YouTube
-  env:
-    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-    YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
-    YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
-    YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
-  run: |
-    python upload_youtube.py
+      - name: Upload Video to YouTube
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: |
+          python upload_youtube.py
