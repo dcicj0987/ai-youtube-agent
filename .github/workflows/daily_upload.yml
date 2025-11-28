@@ -22,7 +22,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
-          pip install gtts pillow google-api-python-client google-auth google-auth-oauthlib ffmpeg-python
+          pip install openai gtts pillow google-api-python-client google-auth google-auth-oauthlib ffmpeg-python
+
 
       - name: Generate Script + Title + Tags
         run: |

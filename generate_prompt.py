@@ -1,30 +1,36 @@
-import openai
-import json
 import os
+import json
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-topic = "AI video tools 2025"
-
-prompt = f"""
-Generate a YouTube package for: {topic}
-Return output as JSON with the following keys:
-"title", "tags", "script"
+prompt = """
+Generate a YouTube short idea and return this in JSON format:
+{
+"title": "...",
+"tags": "...",
+"script": "..."
+}
+The content should be engaging, short, viral and trending.
 """
 
-response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": prompt}]
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.8
 )
 
-data = json.loads(response["choices"][0]["message"]["content"])
+result = response.choices[0].message.content
 
-# Save script.txt
+# Extract clean JSON
+clean = result[result.find("{") : result.rfind("}") + 1]
+
+with open("metadata.json", "w", encoding="utf-8") as f:
+    f.write(clean)
+
+data = json.loads(clean)
+
 with open("script.txt", "w", encoding="utf-8") as f:
     f.write(data["script"])
 
-# Save title and tags for upload stage
-with open("metadata.json", "w", encoding="utf-8") as f:
-    json.dump({"title": data["title"], "tags": data["tags"]}, f)
-
-print("Script + Metadata generated!")
+print("✔ Generated Title, Tags & Script")
