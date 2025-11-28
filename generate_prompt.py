@@ -2,40 +2,46 @@
 import json
 import random
 
-# Simple offline topics – you can edit these anytime
+# Trending short-style topic ideas
 TOPICS = [
-    "3 AI tools that can save you hours every day",
-    "How to grow a YouTube channel from zero",
-    "Fast ways to make money online using AI",
-    "Productivity hacks for students",
-    "Simple tech tricks most people don't know",
+    "3 AI tools that will blow your mind 🤯",
+    "How to grow on YouTube FAST 🚀",
+    "Make money online using AI 💰",
+    "Productivity hacks you must know ⚡",
+    "Insane tech tricks no one tells you 🤖",
+    "Smarter ways to study and learn faster 📚",
+    "AI websites that feel illegal to use 😳",
 ]
 
 topic = random.choice(TOPICS)
 
-title = f"{topic} (in 60 seconds)"
-tags = "ai,technology,productivity,youtube,growth,tips"
+# Better YouTube Shorts title format
+title = f"{topic} #shorts"
 
+# Short-form tags (YouTube uses these to push Shorts)
+tags = "ai,shorts,motivation,viral,youtube,growth,money,tech,productivity,lifehacks"
+
+# Shorter punchy script (ideal for 20-40 sec videos)
 script = f"""
-Welcome to this quick video! Today we’re talking about: {topic}.
+{topic}
 
-Tip 1: Start small and focus on one tool or habit at a time.
-Tip 2: Be consistent every day, even if it’s just 10–15 minutes.
-Tip 3: Track your progress so you can see real improvement.
+🔹 Tip 1: Start small — one new habit, tool, or workflow.
+🔹 Tip 2: Stay consistent — daily action beats motivation.
+🔹 Tip 3: Track progress — even small wins create momentum.
 
-If you found this helpful, like the video and subscribe for more short, useful tips!
+If this helped, hit like ❤️ and follow for more fast tips!
 """
 
-# Clean up whitespace
+# Remove extra whitespace
 script = "\n".join(line.strip() for line in script.strip().splitlines())
 
-# Save metadata.json (for title & tags)
+# Save metadata.json (title + tags)
 with open("metadata.json", "w", encoding="utf-8") as f:
     json.dump({"title": title, "tags": tags}, f, ensure_ascii=False, indent=2)
 
-# Save script.txt (for TTS)
+# Save text for TTS
 with open("script.txt", "w", encoding="utf-8") as f:
     f.write(script)
 
-print("✔ Offline script + title + tags generated")
+print("✔ Generated Shorts script, title & tags")
 print("Title:", title)
