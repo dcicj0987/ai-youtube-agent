@@ -2,12 +2,13 @@ name: Daily YouTube Upload
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # Runs daily at 03:00 UTC
+    - cron: '0 3 * * *'   # Runs daily at 03:00 UTC
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,21 +17,33 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
           pip install gtts pillow google-api-python-client google-auth google-auth-oauthlib ffmpeg-python
 
+      - name: Generate Script + Title + Tags
+        run: |
+          python generate_prompt.py
 
-      - name: Run AI YouTube agent
+      - name: Generate Voice
+        run: |
+          python tts.py
+
+      - name: Generate Thumbnail
+        run: |
+          python thumbnail.py
+
+      - name: Assemble Video
+        run: |
+          python assemble_video.py
+
+      - name: Upload Video to YouTube
         env:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
         run: |
-          python generate_prompt.py
-          python tts.py
-          python assemble_video.py
           python upload_youtube.py

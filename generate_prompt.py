@@ -1,28 +1,30 @@
-# generate_prompt.py
+import openai
 import json
-import random
+import os
 
-def get_trending_topics():
-    # Example trending topics, you can later integrate Google Trends or YouTube trending API
-    return [
-        "AI video tools 2025",
-        "Budget phones under 15000",
-        "Fast home workouts",
-        "Top 5 programming tips",
-        "How to grow on YouTube"
-    ]
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def generate_script(topic):
-    intro = f"Today we dive into {topic}. In this video, you'll learn the top 5 things."
-    points = "\n".join([f"{i+1}. Key point about {topic}" for i in range(5)])
-    outro = "Like and subscribe for more daily videos!"
-    return f"{intro}\n\n{points}\n\n{outro}"
+topic = "AI video tools 2025"
 
-if __name__ == "__main__":
-    topic = random.choice(get_trending_topics())
-    script = generate_script(topic)
-    data = {"topic": topic, "script": script}
-    with open("script.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    print("Script generated for topic:", topic)
-                
+prompt = f"""
+Generate a YouTube package for: {topic}
+Return output as JSON with the following keys:
+"title", "tags", "script"
+"""
+
+response = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": prompt}]
+)
+
+data = json.loads(response["choices"][0]["message"]["content"])
+
+# Save script.txt
+with open("script.txt", "w", encoding="utf-8") as f:
+    f.write(data["script"])
+
+# Save title and tags for upload stage
+with open("metadata.json", "w", encoding="utf-8") as f:
+    json.dump({"title": data["title"], "tags": data["tags"]}, f)
+
+print("Script + Metadata generated!")
