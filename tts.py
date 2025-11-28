@@ -1,3 +1,4 @@
+# tts.py
 from gtts import gTTS
 
 with open("script.txt", "r", encoding="utf-8") as f:
@@ -6,4 +7,4 @@ with open("script.txt", "r", encoding="utf-8") as f:
 tts = gTTS(text)
 tts.save("audio.mp3")
 
-print("✔ Voice Generated!")
+print("✔ Audio (audio.mp3) generated from script.txt")

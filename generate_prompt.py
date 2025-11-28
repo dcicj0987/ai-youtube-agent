@@ -1,50 +1,41 @@
-import os, json
-import requests
+# generate_prompt.py
+import json
+import random
 
-API_KEY = os.getenv("DEEPSEEK_API_KEY")
+# Simple offline topics – you can edit these anytime
+TOPICS = [
+    "3 AI tools that can save you hours every day",
+    "How to grow a YouTube channel from zero",
+    "Fast ways to make money online using AI",
+    "Productivity hacks for students",
+    "Simple tech tricks most people don't know",
+]
 
-prompt = """
-Create a viral YouTube Shorts content plan in JSON format:
+topic = random.choice(TOPICS)
 
-{
-"title": "catchy short title",
-"tags": "tag1,tag2,tag3",
-"script": "Short 20-30 second narration script"
-}
+title = f"{topic} (in 60 seconds)"
+tags = "ai,technology,productivity,youtube,growth,tips"
 
-Make it based on trending technology, AI, money making, motivation or viral useful hacks.
+script = f"""
+Welcome to this quick video! Today we’re talking about: {topic}.
+
+Tip 1: Start small and focus on one tool or habit at a time.
+Tip 2: Be consistent every day, even if it’s just 10–15 minutes.
+Tip 3: Track your progress so you can see real improvement.
+
+If you found this helpful, like the video and subscribe for more short, useful tips!
 """
 
-response = requests.post(
-    "https://api.deepseek.com/v1/chat/completions",
-    headers={
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    },
-    json={
-        "model": "deepseek-chat",
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.7
-    }
-)
+# Clean up whitespace
+script = "\n".join(line.strip() for line in script.strip().splitlines())
 
-# Handle API response safely
-try:
-    raw = response.json()["choices"][0]["message"]["content"]
-except:
-    print("❌ API Error:", response.text)
-    raise SystemExit()
-
-# Extract clean JSON from response
-clean = raw[raw.find("{") : raw.rfind("}")+1]
-data = json.loads(clean)
-
-# Save metadata
+# Save metadata.json (for title & tags)
 with open("metadata.json", "w", encoding="utf-8") as f:
-    json.dump({"title": data["title"], "tags": data["tags"]}, f)
+    json.dump({"title": title, "tags": tags}, f, ensure_ascii=False, indent=2)
 
-# Script for TTS
+# Save script.txt (for TTS)
 with open("script.txt", "w", encoding="utf-8") as f:
-    f.write(data["script"])
+    f.write(script)
 
-print("✔ Metadata + Script Generated Successfully (DeepSeek)")
+print("✔ Offline script + title + tags generated")
+print("Title:", title)
